@@ -4,6 +4,7 @@
 		"activities": [
 			{
 				"name": "Webappcall",
+				"description": "API",
 				"type": "WebActivity",
 				"dependsOn": [],
 				"policy": {
