@@ -1,0 +1,154 @@
+{
+	"name": "data transformation",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_dimAirpot",
+						"type": "DatasetReference"
+					},
+					"name": "DimAirport"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_FactBookings",
+						"type": "DatasetReference"
+					},
+					"name": "FactBookings"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "LS_ADLS",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sinkDimAirport"
+				},
+				{
+					"linkedService": {
+						"referenceName": "LS_ADLS",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sinkbooking"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedCountry"
+				},
+				{
+					"name": "selectcols"
+				},
+				{
+					"name": "sortcountry"
+				},
+				{
+					"name": "alterAirpot"
+				},
+				{
+					"name": "castcost"
+				},
+				{
+					"name": "sortcheckinstatus"
+				},
+				{
+					"name": "filterticketcost"
+				},
+				{
+					"name": "alterBooking"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          airport_id as short,",
+				"          airport_name as string,",
+				"          city as string,",
+				"          country as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> DimAirport",
+				"source(output(",
+				"          booking_id as integer,",
+				"          passenger_id as integer,",
+				"          flight_id as integer,",
+				"          airline_id as integer,",
+				"          origin_airport_id as integer,",
+				"          destination_airport_id as integer,",
+				"          booking_date as date,",
+				"          ticket_cost as decimal(10,2),",
+				"          flight_duration_mins as integer,",
+				"          checkin_status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'parquet') ~> FactBookings",
+				"DimAirport derive(country = upper(country)) ~> derivedCountry",
+				"derivedCountry select(mapColumn(",
+				"          airport_id,",
+				"          airport_name,",
+				"          city,",
+				"          country",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectcols",
+				"selectcols sort(asc(airport_name, true)) ~> sortcountry",
+				"sortcountry alterRow(upsertIf(1==1)) ~> alterAirpot",
+				"FactBookings cast(output(",
+				"          ticket_cost as integer",
+				"     ),",
+				"     errors: true) ~> castcost",
+				"castcost sort(asc(checkin_status, true)) ~> sortcheckinstatus",
+				"sortcheckinstatus filter(ticket_cost < 1000 && ticket_cost > 700) ~> filterticketcost",
+				"filterticketcost alterRow(upsertIf(1==1)) ~> alterBooking",
+				"alterAirpot sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     compressionType: 'snappy',",
+				"     compressionLevel: 'Fastest',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'DimAirport',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: false,",
+				"     updateable: false,",
+				"     upsertable: true,",
+				"     keys:['airport_id'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkDimAirport",
+				"alterBooking sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     compressionType: 'snappy',",
+				"     compressionLevel: 'Fastest',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'Dimbookings',",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: false,",
+				"     updateable: false,",
+				"     upsertable: true,",
+				"     keys:['booking_id'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkbooking"
+			]
+		}
+	}
+}

@@ -1,0 +1,15 @@
+{
+	"name": "Ranjith-26",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "westus3",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "3e736b70-41ed-4050-8a63-c681d7b6a610",
+		"tenantId": "750d3a3f-1f46-4da2-8a64-7605e75ea2f9"
+	}
+}
