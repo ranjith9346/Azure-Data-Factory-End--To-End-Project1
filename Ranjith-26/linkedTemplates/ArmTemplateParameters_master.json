@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "Ranjith-26"
+		},
+		"LS_ADLS_accountKey": {
+			"value": ""
+		},
+		"LS_azuresql_password": {
+			"value": ""
+		},
+		"LS_ADLS_properties_typeProperties_url": {
+			"value": "https://ranjith26.dfs.core.windows.net/"
+		},
+		"LS_azuresql_properties_typeProperties_server": {
+			"value": "ranjithsqlserver.database.windows.net"
+		},
+		"LS_azuresql_properties_typeProperties_database": {
+			"value": "Ranjith-26"
+		},
+		"LS_azuresql_properties_typeProperties_userName": {
+			"value": "ranjithsqlserver"
+		},
+		"LS_github_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
