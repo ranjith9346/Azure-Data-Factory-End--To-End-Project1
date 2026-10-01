@@ -4,6 +4,7 @@
 		"activities": [
 			{
 				"name": "Datatransformation",
+				"description": "",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
